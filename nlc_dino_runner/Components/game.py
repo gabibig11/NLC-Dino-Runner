@@ -2,6 +2,7 @@ import pygame
 from nlc_dino_runner.utils.constants import TITLE, ICON, SCREEN_WIDTH, SCREEN_HEIGHT, BG, FPS, RUNNING, SMALL_CACTUS, LARGE_CACTUS
 from nlc_dino_runner.Components.dinosaur import Dinosaur
 from nlc_dino_runner.Components.obstacles.ObstacleManager import ObstaclesManager
+from nlc_dino_runner.Components.powerups.power_up_manager import PowerUpManager
 from nlc_dino_runner.Components import text_utils
 class Game:
     def __init__(self):
@@ -18,12 +19,14 @@ class Game:
         self.running = True
         self.death_count = 0
         self.player = Dinosaur()
+        self.power_up_manager = PowerUpManager()
         self.obstacle_manager = ObstaclesManager()
         # self.cactusSmall = Cactus(SMALL_CACTUS)
         # self.cactusLarge = Cactus(LARGE_CACTUS)
 
     def run(self):
         self.obstacle_manager.reset_obstacles()
+        self.power_up_manager.reset_power_ups(self.points)
         self.points = 0
         self.game_speed = 20
         self.playing = True
@@ -43,6 +46,7 @@ class Game:
         user_input = pygame.key.get_pressed()
         self.player.update(user_input)
         self.obstacle_manager.update(self)
+        self.power_up_manager.update(self.points, self.game_speed, self.player)
 
     def draw(self):
         self.clock.tick(FPS)
@@ -51,7 +55,7 @@ class Game:
         self.draw_background()
         self.player.draw(self.screen)
         self.obstacle_manager.draw(self.screen)
-
+        self.power_up_manager.draw(self.screen)
         pygame.display.update()
         pygame.display.flip()
 
@@ -61,6 +65,9 @@ class Game:
             self.game_speed += 1
         score_element, score_element_rect = text_utils.get_score_element(self.points)
         self.screen.blit(score_element, score_element_rect)
+
+
+
 
     def draw_background(self):
         image_width = BG.get_width()
@@ -114,7 +121,7 @@ class Game:
             death_score, death_score_rect = text_utils.get_centered_message("Death count: " + str(self.death_count), height = half_screen_height + 50)
             self.screen.blit(death_score, death_score_rect)
 
-            score, score_rect = text_utils.get_centered_message("Score: " + str(self.points), height= half_screen_height + 100)
+            score, score_rect = text_utils.get_centered_message("Your Score: " + str(self.points), height= half_screen_height + 100)
             self.screen.blit(score, score_rect)
 
 
