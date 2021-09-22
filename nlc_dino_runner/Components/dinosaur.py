@@ -9,6 +9,7 @@ from nlc_dino_runner.utils.constants import (
     JUMPING_SHIELD,
     DEFAULT_TYPE,
     SHIELD_TYPE)
+from nlc_dino_runner.Components.text_utils import get_centered_message
 
 
 class Dinosaur(Sprite):
@@ -97,11 +98,18 @@ class Dinosaur(Sprite):
     def draw(self, screen):
         screen.blit(self.image, (self.dino_rect.x, self.dino_rect.y))
 
-    #def check_invensibility(self, screen):
-    #    if self.shield:
-    #        time_to_show = round((self.shield_time_up - pygame.time.get_itcks())/1000)
-    #        if time_to_show >= 0:
-    #            self.show_text
-
-
+    def check_invensibility(self, screen):
+        if self.shield:
+            time_to_show = round((self.shield_time_up - pygame.time.get_itcks())/1000)
+            if time_to_show < 0:
+                self.shield = False
+                if self.type == SHIELD_TYPE:
+                    self.type = DEFAULT_TYPE
+            else:
+                if self.show_text:
+                    text, text_rect = get_centered_message(
+                        f'Shield enable for:  {time_to_show}',
+                        width=500, height=40, size=20
+                    )
+                    screen.blit(text, text_rect)
 
