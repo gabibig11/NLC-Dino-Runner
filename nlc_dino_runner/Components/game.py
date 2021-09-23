@@ -3,7 +3,10 @@ from nlc_dino_runner.utils.constants import TITLE, ICON, SCREEN_WIDTH, SCREEN_HE
 from nlc_dino_runner.Components.dinosaur import Dinosaur
 from nlc_dino_runner.Components.obstacles.ObstacleManager import ObstaclesManager
 from nlc_dino_runner.Components.powerups.power_up_manager import PowerUpManager
+from nlc_dino_runner.Components.lives.lives_manager import LivesManager
 from nlc_dino_runner.Components import text_utils
+
+
 class Game:
     def __init__(self):
         pygame.init()
@@ -21,10 +24,12 @@ class Game:
         self.player = Dinosaur()
         self.power_up_manager = PowerUpManager()
         self.obstacle_manager = ObstaclesManager()
+        self.lives_manager = LivesManager()
         # self.cactusSmall = Cactus(SMALL_CACTUS)
         # self.cactusLarge = Cactus(LARGE_CACTUS)
 
     def run(self):
+        self.lives_manager.restart_lives()
         self.obstacle_manager.reset_obstacles()
         self.power_up_manager.reset_power_ups(self.points)
         self.points = 0
@@ -46,7 +51,7 @@ class Game:
         user_input = pygame.key.get_pressed()
         self.player.update(user_input)
         self.obstacle_manager.update(self)
-        self.power_up_manager.update(self.points, self.game_speed, self.player)
+        self.power_up_manager.update(self.points, self.game_speed, self.player, user_input)
 
     def draw(self):
         self.clock.tick(FPS)
@@ -56,6 +61,8 @@ class Game:
         self.player.draw(self.screen)
         self.obstacle_manager.draw(self.screen)
         self.power_up_manager.draw(self.screen)
+        self.lives_manager.print(self.screen)
+
         pygame.display.update()
         pygame.display.flip()
 
